@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@fastify/mongodb": "^8.0.0",
+    "@prisma/client": "^5.20.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.1",
+    "fastify-jwt": "^4.2.0",
+    "fastify-plugin": "^4.5.1",
+    "fastify-zod": "^1.4.0",
+    "nodemon": "^3.1.7",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon src/server.ts"
+  },
+  "prisma": {
+    "seed": "ts-node ./prisma/seed.ts"
+  }
+}
