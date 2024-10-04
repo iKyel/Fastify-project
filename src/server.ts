@@ -6,11 +6,9 @@ import bookRoutes from "./modules/book/book.route";
 // defines
 // Define the type for the parameters
 
-
 const fastify = Fastify({
   logger: true,
 });
-
 
 // fastify.register(DbConnector)
 // fastify.register(FirstRoute)

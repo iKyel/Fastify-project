@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { createBook, getBooks } from "./book.service";
+import { createBook, getBooks, getBookDetails } from "./book.service";
 import { CreateBookInput } from "./book.schema";
-import { get } from "http";
 
 export async function registerBookHandler(
   request: FastifyRequest<{
@@ -22,16 +21,36 @@ export async function registerBookHandler(
 }
 
 export async function getBooksHandler(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
-    try {
-      const books = await getBooks();
-      return reply.code(200).send(books);
-    } catch (e) {
-      console.error(e);
-      return reply.code(500).send(e);
-    }
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const books = await getBooks();
+    return reply.code(200).send(books);
+  } catch (e) {
+    console.error(e);
+    return reply.code(500).send(e);
   }
+}
 
+export async function getBookDetailsHandler(
+  request: FastifyRequest<{
+    Params: { bookId: string };
+  }>,
+  reply: FastifyReply
+) {
+  const { bookId } = request.params;
 
+  try {
+    const book = await getBookDetails(bookId);
+    if (!book) {
+      return reply.code(404).send({ message: "Book not found" });
+    }
+    return reply.code(200).send(book);
+  } catch (e) {
+    console.error("Error fetching book details:", e);
+    return reply
+      .code(500)
+      .send({ message: "Error fetching book details", error: e });
+  }
+}

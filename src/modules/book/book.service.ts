@@ -29,44 +29,72 @@ export async function createBook(input: CreateBookInput) {
 }
 
 export async function getBooks() {
-    try {
-      const books = await prisma.book.findMany({
-        include: {
-          authors: {
-            include: {
-              author: { // Bao gồm dữ liệu tác giả
-                select: {
-                  name: true, // Chỉ lấy trường 'name'
-                },
-              },
-            },
-          },
-          genres: {
-            include: {
-              genre: { // Bao gồm dữ liệu thể loại
-                select: {
-                  name: true, // Chỉ lấy trường 'name'
-                },
+  try {
+    const books = await prisma.book.findMany({});
+
+    // Biến đổi dữ liệu sách để chỉ bao gồm tiêu đề, tên tác giả và tên thể loại
+    const result = books.map((book) => ({
+      id: book.id,
+      title: book.title,
+      publishedDate: book.publishedDate,
+      price: book.price,
+      summary: book.summary,
+    }));
+
+    return result;
+  } catch (error) {
+    console.error("Lỗi khi lấy sách:", error);
+    throw new Error("Không thể lấy danh sách sách.");
+  }
+}
+
+export async function getBookDetails(bookId: string) {
+  try {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+      include: {
+        authors: {
+          select: {
+            author: {
+              select: {
+                name: true,
               },
             },
           },
         },
-      });
-  
-      // Biến đổi dữ liệu sách để chỉ bao gồm tiêu đề, tên tác giả và tên thể loại
-      const result = books.map((book) => ({
-        title: book.title,
-        authors: book.authors.map((bookAuthor) => bookAuthor.author.name), // Truy cập tên của tác giả
-        genres: book.genres.map((bookGenre) => bookGenre.genre.name), // Truy cập tên của thể loại
-        publishedDate: book.publishedDate,
-        price: book.price,
-        summary: book.summary,
-      }));
-  
-      return result;
-    } catch (error) {
-      console.error("Lỗi khi lấy sách:", error);
-      throw new Error("Không thể lấy danh sách sách.");
+        genres: {
+          select: {
+            genre: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!book) {
+      throw new Error("Book not found");
     }
+
+    // Map authors and genres to return a cleaner response
+    const detailedBook = {
+      title: book.title,
+      publishedDate: book.publishedDate,
+      price: book.price,
+      summary: book.summary,
+      authors: book.authors.map((a) => ({
+        name: a.author.name,
+      })),
+      genres: book.genres.map((g) => ({
+        name: g.genre.name,
+      })),
+    };
+
+    return detailedBook;
+  } catch (error) {
+    console.error("Error getting book details:", error);
+    throw new Error("Could not fetch book details.");
   }
-  
+}
