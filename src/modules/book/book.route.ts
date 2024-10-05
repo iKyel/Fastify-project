@@ -2,7 +2,8 @@ import { FastifyInstance } from "fastify";
 import { 
   registerBookHandler, 
   getBooksHandler, 
-  getBookDetailsHandler 
+  getBookDetailsHandler ,
+  searchBooksHandler
 } from "./book.controller";
 
 async function bookRoutes(server: FastifyInstance) {
@@ -14,6 +15,9 @@ async function bookRoutes(server: FastifyInstance) {
 
   // Route to get book details by ID
   server.get('/:bookId', getBookDetailsHandler);
+
+  // Route to search books by title
+  server.get('/search', searchBooksHandler);
 }
 
 export default bookRoutes;

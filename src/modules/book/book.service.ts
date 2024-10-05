@@ -98,3 +98,28 @@ export async function getBookDetails(bookId: string) {
     throw new Error("Could not fetch book details.");
   }
 }
+
+export async function searchBooks(title: string) {
+  try {
+    const books = await prisma.book.findMany({
+      where: {
+        title: {
+          contains: title, // Tìm kiếm sách có tiêu đề chứa từ khóa
+          mode: 'insensitive', // Không phân biệt chữ hoa chữ thường
+        },
+      },
+      select: {
+        id: true,
+        title: true,
+        publishedDate: true,
+        price: true,
+        summary: true,
+      },
+    });
+
+    return books;
+  } catch (error) {
+    console.error("Error searching books:", error);
+    throw new Error("Could not search books.");
+  }
+}
